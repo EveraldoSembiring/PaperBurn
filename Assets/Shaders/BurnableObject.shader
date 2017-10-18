@@ -10,6 +10,7 @@
 		_MaskThreshold("Mask Threshold", Range(0,1)) = 0
 		_BurnSize("Burn Size", Range(0,1)) = 0
 		_Intensity("Intensity", Range(0, 3)) = 1
+		[MaterialToggle] _BurnTexActive("Activate Burn Texture", Float) = 1
 	}
 	SubShader
 	{
@@ -46,6 +47,7 @@
 			float _MaskThreshold;
 			float _BurnSize;
 			float _Intensity;
+			float _BurnTexActive;
 
 			v2f vert (appdata v)
 			{
@@ -64,7 +66,13 @@
 				float burnThreshold = _MaskThreshold + _BurnSize;
 
 				if (maskCol <= _MaskThreshold)
-					mainCol = tex2D(_BurnTex, i.uv) * _Intensity;
+				{
+					if(_BurnTexActive == 1)
+						mainCol = tex2D(_BurnTex, i.uv) * _Intensity;
+					else
+						mainCol.a = 0;
+				}
+					
 				
 				if (_MaskThreshold > 0 && maskCol > _MaskThreshold && maskCol <= burnThreshold)
 					mainCol = tex2D(_FireTex, float2((maskCol - _MaskThreshold)/ _BurnSize,0));
